@@ -12,14 +12,19 @@ pipeline {
 
         stage('Build with Maven') {
             steps {
-                sh 'mvn clean package -DskipTests'
-            }
+                dir('cart-service') {
+                   sh 'mvn clean package -DskipTests'
+                }
+           }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t venkathub/cart-service:latest .'
-            }
+                dir('cart-service') {
+                    sh 'docker build -t venkathub/cart-service:latest .'
+                }
+            }    
+
         }
         stage('Push Docker Image') {
             steps {
