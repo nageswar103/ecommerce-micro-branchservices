@@ -3,6 +3,7 @@ my-ecommerce-db
 admin
 s0kj7FCNAWeS53f
 ecommerce_db
+check
 
 mysql -h my-ecommerce-db.cnsw64g0kyem.us-east-2.rds.amazonaws.com -u admin -p 
 
