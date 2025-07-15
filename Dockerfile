@@ -1,30 +1,23 @@
-# Stage 1: Build the application using Maven
+# Stage 1: Build the application
 FROM maven:3.9.6-eclipse-temurin-17 AS build
 
-# Set working directory
 WORKDIR /app
 
-# Copy pom.xml and download dependencies
-COPY cart-service/pom.xml .
-RUN mvn dependency:go-offline
+# Copy everything into the container
+COPY . .
 
-# Copy source code
-COPY cart-service ./cart-service
+# Download dependencies and build the app
+RUN mvn clean package -DskipTests
 
-# Build the application (skip tests for faster build)
-RUN mvn -f cart-service/pom.xml clean package -DskipTests
+# Stage 2: Create runtime image
+FROM eclipse-temurin:17-jdk-alpine
 
-# Stage 2: Run the application using a minimal JDK image
-FROM eclipse-temurin:17-jre-alpine
-
-# Set working directory
 WORKDIR /app
 
-# Copy the built JAR from the previous stage
-COPY --from=build /app/cart-service/target/*.jar app.jar
+# Copy only the final jar from the build stage
+COPY --from=build /app/target/*.jar app.jar
 
-# Expose the port your app runs on
+# Expose port (adjust to your app's port if needed)
 EXPOSE 8084
 
-# Run the app
 ENTRYPOINT ["java", "-jar", "app.jar"]

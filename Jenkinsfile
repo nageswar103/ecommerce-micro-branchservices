@@ -1,21 +1,21 @@
-
 pipeline {
     agent any
 
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'cart-service', credentialsId: 'githubcrd', url: 'https://github.com/nageswar103/ecommerce-micro-branchservices.git'
+                git branch: 'cart-service', 
+                    credentialsId: 'githubcrd', 
+                    url: 'https://github.com/nageswar103/ecommerce-micro-branchservices.git'
             }
         }
-        
 
         stage('Build with Maven') {
             steps {
                 dir('cart-service') {
-                   sh 'mvn clean package -DskipTests'
+                    sh 'mvn clean package -DskipTests'
                 }
-           }
+            }
         }
 
         stage('Build Docker Image') {
@@ -23,18 +23,16 @@ pipeline {
                 dir('cart-service') {
                     sh 'docker build -t venkathub/cart-service:latest .'
                 }
-            }    
-
+            }
         }
+
         stage('Push Docker Image') {
             steps {
-                script {
-                    withDockerRegistry(credentialsId: 'dockercrd', toolName: 'docker') {
-                        sh "docker push venkathub/cart-service:latest "
-                    }
+                withCredentials([usernamePassword(credentialsId: 'dockercrd', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin'
+                    sh 'docker push venkathub/cart-service:latest'
                 }
             }
-        }    
+        }
     }
-
 }
