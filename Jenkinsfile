@@ -4,7 +4,9 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'discount-service', credentialsId: 'githubcrd', url: 'https://github.com/nageswar103/ecommerce-micro-branchservices.git'
+                git branch: 'discount-service', 
+                    credentialsId: 'githubcrd', 
+                    url: 'https://github.com/nageswar103/ecommerce-micro-branchservices.git'
             }
         }
 
